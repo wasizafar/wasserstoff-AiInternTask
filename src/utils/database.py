@@ -12,7 +12,7 @@ def create_table():
                    subject TEXT,
                    sender TEXT,
                    recipient TEXT,
-                   data TEXT,
+                   date TEXT,
                    body TEXT
         )
     """)
