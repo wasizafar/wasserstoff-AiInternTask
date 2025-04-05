@@ -1,9 +1,12 @@
 import sys
 import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 import base64
 from email import message_from_bytes
 from googleapiclient.errors import HttpError
 from gmail_service import authenticate_gmail
+from src.utils.database import save_email, create_table
 
 def fetch_emails(max_results=5):
     """Fetch recent emails from the Gmail inbox."""
@@ -57,8 +60,14 @@ def get_email_body(email_msg):
     payload = email_msg.get_payload(decode=True)
     return payload.decode("utf-8", errors="ignore") if payload else "[No Content]"
 
-# Test fetching emails
-if __name__ == "__main__":
-    emails = fetch_emails(5)
+def fetch_and_store_emails(max_results=5):
+    """Fetch emails and store them in the database."""
+    create_table()
+    emails = fetch_emails(max_results)
+    
     for email in emails:
-        print(f"📩 {email['subject']} from {email['from']}")
+        save_email(email)
+        print(f"✅ Saved: {email['subject']}")
+
+if __name__ == "__main__":
+    fetch_and_store_emails(5)
