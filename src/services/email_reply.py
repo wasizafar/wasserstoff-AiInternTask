@@ -21,7 +21,7 @@ def generate_reply(email_subject, email_body):
     Your reply should be clear, concise, and professional.
     """
     
-    model = genai.GenerativeModel("gemini-pro")  # Use Gemini-Pro model
+    model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Use Gemini-Pro model
     response = model.generate_content(prompt)
 
     return response.text.strip()

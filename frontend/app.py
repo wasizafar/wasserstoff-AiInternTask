@@ -4,6 +4,8 @@ import pandas as pd
 import subprocess
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.services.email_reply import generate_reply
 
 DB_PATH = "data/emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
@@ -18,7 +20,7 @@ def fetch_new_emails():
     """Activate virtual environment and run email fetcher script."""
     if sys.platform == "win32":  # Windows
         command = f"cmd /c call {VENV_PATH} && python src/services/email_fetcher.py"
-    else:  # Linux/macOS
+    else:  
         command = f"source myenv/bin/activate && python src/services/email_fetcher.py"
 
     subprocess.run(command, shell=True, check=True)
@@ -58,4 +60,12 @@ else:
     st.write(f"**To:** {email_data['recipient']}")
     st.write(f"**Date:** {email_data['date']}")
     st.write("**Body:**")
-    st.info(email_data["body"])
+    with st.expander("See the body"):
+        st.info(email_data["body"])
+
+    # Generate AI Reply using Gemini
+    if st.button("Generate AI Reply"):
+        with st.spinner("Generating reply using Gemini AI...."):
+            ai_reply = generate_reply(email_data['subject'], email_data['body'])
+        st.subheader("AI-Generated Reply")
+        st.text_area('Edit before sending:', ai_reply, height=200)
