@@ -2,3 +2,4 @@ myenv/
 credentials.json
 token.pickle
 .env
+data/
