@@ -19,13 +19,8 @@ def get_emails():
     return df
 
 def fetch_new_emails():
-    """Activate virtual environment and run email fetcher script."""
-    if sys.platform == "win32":  # Windows
-        command = f"cmd /c call {VENV_PATH} && python src/services/email_fetcher.py"
-    else:  
-        command = f"source myenv/bin/activate && python src/services/email_fetcher.py"
-
-    subprocess.run(command, shell=True, check=True)
+    # Run emial_fetcher.py using the current Python environment.
+    subprocess.run(["python", r"src\services\email_fetcher.py"], check=True)
 
 # Streamlit UI
 st.set_page_config(page_title="AI Email Assistant", layout="wide")
