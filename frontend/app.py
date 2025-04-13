@@ -5,7 +5,8 @@ import subprocess
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.services.email_reply import generate_reply
+from src.services.email_reply import generate_reply # AI Reply Generator
+from src.services.email_sender import send_email #email sending function
 
 DB_PATH = "data/emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
@@ -16,6 +17,7 @@ def get_emails():
     df = pd.read_sql_query("SELECT * FROM emails ORDER BY date DESC", conn)
     conn.close()
     return df
+
 def fetch_new_emails():
     """Activate virtual environment and run email fetcher script."""
     if sys.platform == "win32":  # Windows
@@ -68,4 +70,13 @@ else:
         with st.spinner("Generating reply using Gemini AI...."):
             ai_reply = generate_reply(email_data['subject'], email_data['body'])
         st.subheader("AI-Generated Reply")
-        st.text_area('Edit before sending:', ai_reply, height=200)
+        reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+
+        # Send Email Button
+        if st.button("Send Reply"):
+            with st.spinner("Sending email...."):
+                success = send_email(email_data['sender'], email_data['subject'], reply_text)
+            if success:
+                st.success("Email sent sucessfully!")
+            else:
+                st.error("Failed to send email. Check STMP settings.")
