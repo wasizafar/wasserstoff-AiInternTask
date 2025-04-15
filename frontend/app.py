@@ -8,9 +8,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.services.email_reply import generate_reply # AI Reply Generator
 from src.services.email_sender import send_email #email sending function
 
-DB_PATH = "data/emails.db"
+DB_PATH = r"data\emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
 
+@st.cache_resource #handle catch resourse
 def get_emails():
     """Fetch stored emails from the database."""
     conn = sqlite3.connect(DB_PATH)
@@ -20,7 +21,7 @@ def get_emails():
 
 def fetch_new_emails():
     # Run emial_fetcher.py using the current Python environment.
-    subprocess.run(["python", r"src\services\email_fetcher.py"], check=True)
+    subprocess.run([sys.executable, r"src\services\email_fetcher.py"], check=True)
 
 # Streamlit UI
 st.set_page_config(page_title="AI Email Assistant", layout="wide")
@@ -57,8 +58,9 @@ else:
     st.write(f"**To:** {email_data['recipient']}")
     st.write(f"**Date:** {email_data['date']}")
     st.write("**Body:**")
-    with st.expander("See the body"):
+    with st.expander("Body"):
         st.info(email_data["body"])
+    # st.text_area('Body', email_data['body'])
 
     # Generate AI Reply using Gemini
     if st.button("Generate AI Reply"):
