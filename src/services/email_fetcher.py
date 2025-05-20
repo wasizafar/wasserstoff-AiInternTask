@@ -8,7 +8,7 @@ from googleapiclient.errors import HttpError
 from gmail_service import authenticate_gmail
 from src.utils.database import save_email, create_table
 
-def fetch_emails(max_results=5):
+def fetch_emails(max_results=6):
     """Fetch recent emails from the Gmail inbox."""
     service = authenticate_gmail()
 

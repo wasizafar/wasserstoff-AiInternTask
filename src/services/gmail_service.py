@@ -15,7 +15,7 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 def authenticate_gmail():
     """Authenticate user and return Gmail API service."""
-    creds = pyt
+    creds = None
     token_path = "src/token.pickle"
 
     # Load credentials from token file if available

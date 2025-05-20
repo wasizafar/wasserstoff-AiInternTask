@@ -7,6 +7,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.services.email_reply import generate_reply # AI Reply Generator
 from src.services.email_sender import send_email #email sending function
+from src.services.email_cleaner import clean_email_body #emial cleaner fromt the html tags
 
 DB_PATH = r"data\emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
@@ -62,7 +63,14 @@ else:
         st.info(email_data["body"])
     # st.text_area('Body', email_data['body'])
 
-    # Generate AI Reply using Gemini
+    #clean emial body with gemini
+    if st.button("clean & summarize Email"):
+        with st.spinner("cleaning email content..."):
+            clea_body = clean_email_body(email_data['body'])
+        st.subheader("cleaned email content")
+        st.info(clea_body)
+
+        # Generate AI Reply using Gemini
     if st.button("Generate AI Reply"):
         with st.spinner("Generating reply using Gemini AI...."):
             ai_reply = generate_reply(email_data['subject'], email_data['body'])
@@ -77,3 +85,24 @@ else:
                 st.success("Email sent sucessfully!")
             else:
                 st.error("Failed to send email. Check STMP settings.")
+
+    else:
+        st.subheader("Raw Email Body")
+        st.code(email_data['body'][:3000], language="html")
+        # Generate AI Reply using Gemini
+    if st.button("Generate AI Reply"):
+        with st.spinner("Generating reply using Gemini AI...."):
+            ai_reply = generate_reply(email_data['subject'], email_data['body'])
+        st.subheader("AI-Generated Reply")
+        reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+
+        # Send Email Button
+        if st.button("Send Reply"):
+            with st.spinner("Sending email...."):
+                success = send_email(email_data['sender'], email_data['subject'], reply_text)
+            if success:
+                st.success("Email sent sucessfully!")
+            else:
+                st.error("Failed to send email. Check STMP settings.")
+
+    
