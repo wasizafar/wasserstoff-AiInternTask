@@ -4,8 +4,9 @@ import pandas as pd
 import subprocess
 import sys
 import os
+import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.services.email_reply import generate_reply # AI Reply Generator
+from src.services.email_reply import generate_reply_by_gemini, generate_reply_by_groq # AI Reply Generator
 from src.services.email_sender import send_email #email sending function
 from src.services.email_cleaner import clean_email_body #emial cleaner fromt the html tags
 
@@ -62,6 +63,13 @@ else:
     with st.expander("Body"):
         st.info(email_data["body"])
     # st.text_area('Body', email_data['body'])
+    
+    option = st.selectbox(
+            "Choose one of these AI model",
+            ('Gemini AI', 'Groq AI'),
+            index=None,
+            placeholder="choose the AI Model"
+        )
 
     #clean emial body with gemini
     if st.button("clean & summarize Email"):
@@ -71,11 +79,29 @@ else:
         st.info(clea_body)
 
         # Generate AI Reply using Gemini
+    # make option to choose the AI  Model
     if st.button("Generate AI Reply"):
-        with st.spinner("Generating reply using Gemini AI...."):
-            ai_reply = generate_reply(email_data['subject'], email_data['body'])
-        st.subheader("AI-Generated Reply")
-        reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+        # with st.popover('Choose the AI Model'):
+        if option == "Gemini AI":
+            try:
+                with st.spinner("Generating reply using Gemini AI...."):
+                    ai_reply = generate_reply_by_gemini(email_data['subject'], email_data['body'])
+                st.subheader("AI-Generated Reply")
+                reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+            except Exception as e:
+                st.warning(f"⚠️ Gemini AI API error: {e}")
+
+        elif option == 'Groq AI':
+            try:
+                with st.spinner('Generating reply using Groq AI....'):
+                    ai_reply = generate_reply_by_groq(email_data['subject'], email_data['body'], email_data['sender'],email_data['recipient'])
+                st.subheader('AI-Generated Reply')
+                reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+            except Exception as e:
+                st.warning(f"⚠️ Groq AI API error: {e}")
+        else:
+            st.warning("Please select an AI model before generating a reply.")
+
 
         # Send Email Button
         if st.button("Send Reply"):
