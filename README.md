@@ -33,22 +33,23 @@ An intelligent personal assistant that connects to your Gmail inbox, fetches ema
 ## 📁 Project Structure
 
 ai-email-assistant/
-├── .env # API keys and credentials
-├── README.md # This file
-├── requirements.txt # Python dependencies
+├── .env                   # Environment variables (API keys, credentials)
+├── README.md              # Project overview and setup instructions
+├── requirements.txt       # List of Python dependencies
 ├── frontend/
-│ └── app.py # Streamlit web app
+│   └── app.py             # Streamlit web application
 ├── src/
-│ ├── services/
-│ │ ├── email_fetcher.py # Fetches emails via IMAP
-│ │ ├── email_cleaner.py # Summarizes HTML emails via Gemini
-│ │ ├── email_reply.py # Generates smart replies
-│ │ └── email_sender.py # Sends emails using SMTP
-│ └── utils/
-│ └── db.py # DB connection + helpers
+│   ├── services/
+│   │   ├── email_fetcher.py   # Fetches emails via IMAP
+│   │   ├── email_cleaner.py   # Cleans and summarizes HTML emails using Gemini API
+│   │   ├── email_reply.py     # Generates intelligent email replies
+│   │   └── email_sender.py    # Sends email responses using SMTP
+│   └── utils/
+│       └── db.py              # Handles SQLite DB connection and helpers
 ├── data/
-│ └── emails.db # Local SQLite database
-└── .gitignore # Ignore unnecessary files
+│   └── emails.db          # Local SQLite database for storing emails
+└── .gitignore             # Specifies files and folders to ignore in version control
+
 
 
 ---
