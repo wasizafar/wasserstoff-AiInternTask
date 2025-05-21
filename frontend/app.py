@@ -16,7 +16,7 @@ VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for ven
 def get_emails():
     """Fetch stored emails from the database."""
     conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("SELECT * FROM emails ORDER BY date DESC", conn)
+    df = pd.read_sql_query("SELECT * FROM emails ORDER BY date DESC LIMIT 30", conn)
     conn.close()
     return df
 
@@ -90,19 +90,19 @@ else:
         st.subheader("Raw Email Body")
         st.code(email_data['body'][:3000], language="html")
         # Generate AI Reply using Gemini
-    if st.button("Generate AI Reply"):
-        with st.spinner("Generating reply using Gemini AI...."):
-            ai_reply = generate_reply(email_data['subject'], email_data['body'])
-        st.subheader("AI-Generated Reply")
-        reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
+    # if st.button("Generate AI Reply"):
+    #     with st.spinner("Generating reply using Gemini AI...."):
+    #         ai_reply = generate_reply(email_data['subject'], email_data['body'])
+    #     st.subheader("AI-Generated Reply")
+    #     reply_text = st.text_area('Edit before sending:', ai_reply, height=200)
 
-        # Send Email Button
-        if st.button("Send Reply"):
-            with st.spinner("Sending email...."):
-                success = send_email(email_data['sender'], email_data['subject'], reply_text)
-            if success:
-                st.success("Email sent sucessfully!")
-            else:
-                st.error("Failed to send email. Check STMP settings.")
+    #     # Send Email Button
+    #     if st.button("Send Reply"):
+    #         with st.spinner("Sending email...."):
+    #             success = send_email(email_data['sender'], email_data['subject'], reply_text)
+    #         if success:
+    #             st.success("Email sent sucessfully!")
+    #         else:
+    #             st.error("Failed to send email. Check STMP settings.")
 
     
