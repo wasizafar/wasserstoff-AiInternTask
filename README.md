@@ -32,6 +32,7 @@ An intelligent personal assistant that connects to your Gmail inbox, fetches ema
 
 ## 📁 Project Structure
 
+'''
 ai-email-assistant/
 ├── .env                   # Environment variables (API keys, credentials)
 ├── README.md              # Project overview and setup instructions
@@ -49,9 +50,7 @@ ai-email-assistant/
 ├── data/
 │   └── emails.db          # Local SQLite database for storing emails
 └── .gitignore             # Specifies files and folders to ignore in version control
-
-
-
+'''
 ---
 
 ## ⚙️ Setup Instructions
