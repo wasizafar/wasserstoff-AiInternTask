@@ -8,8 +8,9 @@ import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.services.email_reply import generate_reply_by_gemini, generate_reply_by_groq # AI Reply Generator
 from src.services.email_sender import send_email #email sending function
-from src.services.email_cleaner import clean_email_body #emial cleaner fromt the html tags
-from src.
+from src.services.email_cleaner import clean_email_body_by_groq, clean_email_body_by_gemini #emial cleaner fromt the html tags
+# from src.services.gmail_service import authenticate_gmail # connect with the email by the API
+
 
 DB_PATH = r"data\emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
@@ -22,6 +23,8 @@ def get_emails():
     conn.close()
     return df
 
+def authenticate_gmail():
+    subprocess.run([sys.executable, r'src\services\gmail_service.py'])
 def fetch_new_emails():
     # Run emial_fetcher.py using the current Python environment.
     subprocess.run([sys.executable, r"src\services\email_fetcher.py"], check=True)
@@ -32,6 +35,12 @@ st.set_page_config(page_title="AI Email Assistant", layout="wide")
 st.title("📧 AI-Powered Email Assistant")
 st.write("Displaying fetched emails from Gmail")
 
+# Button to connect wit you mail
+if st.button('connect with the mail'):
+    with st.spinner("Connecting with the you email...."):
+        authenticate_gmail()
+    st.success('Email connect sucessfully')
+    # st.rerun()
 #  Button to fetch new emails
 if st.button("Fetch New Emails"):
     with st.spinner("Fetching emails...."):
@@ -44,6 +53,7 @@ emails = get_emails()
 
 if emails.empty:
     st.warning("No emails found in the database. Run the email fetcher script first.")
+
 else:
     # Show emails in a table
     st.dataframe(emails, height=400, use_container_width=True)
@@ -65,6 +75,7 @@ else:
         st.info(email_data["body"])
     # st.text_area('Body', email_data['body'])
     
+    # make option to choose the AI  Model
     option = st.selectbox(
             "Choose one of these AI model",
             ('Gemini AI', 'Groq AI'),
@@ -74,13 +85,18 @@ else:
 
     #clean emial body with gemini
     if st.button("clean & summarize Email"):
-        with st.spinner("cleaning email content..."):
-            clea_body = clean_email_body(email_data['body'])
-        st.subheader("cleaned email content")
-        st.info(clea_body)
+        if option == 'Gemini AI':
+            with st.spinner("cleaning email content by Gemini...."):
+                clea_body = clean_email_body_by_gemini(email_data['body'])
+            st.subheader("cleaned email content")
+            st.info(clea_body)
+        elif option == 'Groq AI':
+            with st.spinner('cleaning email content by Groq....'):
+                clea_body = clean_email_body_by_groq(email_data['body'])
+            st.subheader("cleaned email content")
+            st.info(clea_body)
 
-        # Generate AI Reply using Gemini
-    # make option to choose the AI  Model
+    # Generate AI Reply using Gemini
     if st.button("Generate AI Reply"):
         # with st.popover('Choose the AI Model'):
         if option == "Gemini AI":
@@ -114,8 +130,17 @@ else:
                 st.error("Failed to send email. Check STMP settings.")
 
     else:
-        st.subheader("Raw Email Body")
-        st.code(email_data['body'][:3000], language="html")
+        st.subheader('Write you own reply')
+        reply_text = st.text_area('Edit before sending:', height=200)
+        # Send Email Button
+        if st.button("Send Reply"):
+            with st.spinner("Sending email...."):
+                success = send_email(email_data['sender'], email_data['subject'], reply_text)
+            if success:
+                st.success("Email sent sucessfully!")
+            else:
+                st.error("Failed to send email. Check STMP settings.")
+
         # Generate AI Reply using Gemini
     # if st.button("Generate AI Reply"):
     #     with st.spinner("Generating reply using Gemini AI...."):

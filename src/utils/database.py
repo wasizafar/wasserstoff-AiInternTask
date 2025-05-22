@@ -34,3 +34,5 @@ def save_email(email_data):
 if __name__ == "__main__":
     create_table()
     print("Database setup completed!")
+
+

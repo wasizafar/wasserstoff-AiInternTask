@@ -11,6 +11,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Configure the Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
+# configure Groq API
 client = Groq(
     api_key = os.getenv("GROK_API_KEY"),
 )
