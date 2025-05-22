@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.services.email_reply import generate_reply_by_gemini, generate_reply_by_groq # AI Reply Generator
 from src.services.email_sender import send_email #email sending function
 from src.services.email_cleaner import clean_email_body #emial cleaner fromt the html tags
+from src.
 
 DB_PATH = r"data\emails.db"
 VENV_PATH = os.path.join("myenv", "Scripts", "activate")  # Windows path for venv activation
