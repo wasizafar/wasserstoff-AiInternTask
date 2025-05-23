@@ -37,6 +37,8 @@ def clean_email_body_by_groq(html_body):
 
     HTML Email:
     {html_body}
+    do not use: Here is a professional reply to the email:
+    in the ouput
     """
     try:
         # send request to groq chat complation API
